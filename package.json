@@ -1,0 +1,9 @@
+{
+  "name": "api.nosaj.io",
+  "version": "1.0.0",
+  "description": "nosaj.io data exposed as json",
+  "main": "index.js",
+  "repository": "https://github.com/nosajio/api-nosaj-io",
+  "author": "Jason Howmans<hi@nosaj.io>",
+  "license": "MIT"
+}
