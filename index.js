@@ -1,11 +1,12 @@
 require('dotenv').config();
 
-const debug         = require('debug')('nosaj-api:index');
-const error         = require('debug')('nosaj-api:error:index');
-const axios         = require('axios');
-const express       = require('express');
-const api           = express();
-const { allPosts }  = require('nosaj-md-parser');
+const debug          = require('debug')('nosaj-api:index');
+const error          = require('debug')('nosaj-api:error:index');
+const axios          = require('axios');
+const express        = require('express');
+const api            = express();
+const { allPosts }   = require('nosaj-md-parser');
+const { findCovers } = require('./auto-covers');
 
 const { PORT } = process.env;
 
@@ -25,7 +26,19 @@ function handleGetPosts(req, res) {
   allPosts()
   .then(posts => {
     const visiblePosts = posts.filter(p => showAllPosts || dateBefore(new Date(), new Date(p.date)));
-    res.json(visiblePosts);
+    // Add covers to post objects
+    const coversRequests = visiblePosts.map(
+      vp => findCovers(vp.slug).then(covers => Object.assign({}, vp, { covers }))
+    );
+    Promise.all(coversRequests)
+      .catch(err => {
+        console.error(err);
+        res.status(500);
+        res.end();
+      })
+      .then(responseWithCovers => {
+        res.json(responseWithCovers);
+      });
   });
 }
 
