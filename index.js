@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const debug         = require('debug')('nosaj-api:index');
 const error         = require('debug')('nosaj-api:error:index');
-const request       = require('request');
+const axios         = require('axios');
 const express       = require('express');
 const api           = express();
 const { allPosts }  = require('nosaj-md-parser');
@@ -37,12 +37,13 @@ function handleGetMedium(req, res) {
   const postsEndpoint = 'https://medium.com/@nosajio/latest';
   const requestOptions = {
     url: postsEndpoint,
+    method: 'get',
     headers: {
       'Accept': 'application/json'
     }
   }
-  request(requestOptions, (err, response, body) => {
-    const mediumJSON = parseMediumResponse(body);
+  axios.request(requestOptions).then((response) => {
+    const mediumJSON = parseMediumResponse(response.data);
     res.json(mediumJSON);
   });
 }
