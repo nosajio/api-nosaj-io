@@ -19,7 +19,6 @@ const findCovers = async slug => {
   // Just output urls that returned a 200
   const existingUrls = responses.filter(res => res.status === 200).map(({ config }) => config.url);
   return existingUrls
-    
 }
  
 module.exports = { findCovers }

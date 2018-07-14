@@ -16,19 +16,25 @@ const { PORT } = process.env;
 api.get('/posts', handleGetPosts);
 api.get('/medium', handleGetMedium)
 
+
 // 
 //  Just send all available posts to the requester as JSON
 // 
 function handleGetPosts(req, res) {
   // Add ?* to show posts after current date
   const showAllPosts = '*' in req.query;
+
+  // Replace protocol with 'https://'. Err on the side of SSL...
+  // https://www.paulirish.com/2010/the-protocol-relative-url/
+  const coversToHttps = covers => covers.map(c => c.replace('http://', 'https://'));
+  
   // Use parser to open posts in /writing dir
   allPosts()
   .then(posts => {
     const visiblePosts = posts.filter(p => showAllPosts || dateBefore(new Date(), new Date(p.date)));
     // Add covers to post objects
     const coversRequests = visiblePosts.map(
-      vp => findCovers(vp.slug).then(covers => Object.assign({}, vp, { covers }))
+      vp => findCovers(vp.slug).then(covers => Object.assign({}, vp, { covers: coversToHttps(covers) }))
     );
     Promise.all(coversRequests)
       .catch(err => {
