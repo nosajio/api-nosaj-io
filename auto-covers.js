@@ -12,7 +12,7 @@ const findCovers = async slug => {
   // First, check which covers are available
   const requests = searchTypes.map(t => {
     const url = coverUrl(`${slug}.${t}`);
-    const request = axios.get( url, { validateStatus: s => s < 500 } );
+    const request = axios.head( url, { validateStatus: s => s < 500 } );
     return request;
   });
   const responses = await Promise.all(requests);
